@@ -10,6 +10,7 @@
 struct Options {
     std::filesystem::path repo{"."};           ///< каталог проверяемого проекта
     std::filesystem::path readme{"README.md"}; ///< README, относительный путь считается от repo
+    bool dump = false;                         ///< вывести найденные блоки и inline-код вместо проверки
     bool help = false;                         ///< показать справку
     bool version = false;                      ///< показать версию
 };

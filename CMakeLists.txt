@@ -17,6 +17,7 @@ configure_file(Version.in Version @ONLY)
 
 add_library(${PROJECT_NAME}-core STATIC
         src/diagnostic.cpp
+        src/markdown.cpp
         src/options.cpp
 )
 target_include_directories(${PROJECT_NAME}-core PUBLIC src)
@@ -33,6 +34,7 @@ if (BUILD_TESTS)
     find_package(GTest REQUIRED)
     add_executable(${PROJECT_NAME}-tests
             tests/diagnostic_test.cpp
+            tests/markdown_test.cpp
             tests/options_test.cpp
     )
     target_link_libraries(${PROJECT_NAME}-tests PRIVATE ${PROJECT_NAME}-core GTest::gtest_main GTest::gmock)

@@ -33,9 +33,13 @@ TEST(Options, Defaults) {
     auto const opt = parse({});
     EXPECT_EQ(opt.repo, ".") << "каталог проекта по умолчанию должен быть текущим";
     EXPECT_EQ(opt.readme, "README.md") << "README по умолчанию должен быть README.md";
+    EXPECT_FALSE(opt.dump) << "по умолчанию README проверяется, а не выводится";
     EXPECT_FALSE(opt.help);
     EXPECT_FALSE(opt.version);
 }
+
+/// --dump включает вывод разобранного README.
+TEST(Options, Dump) { EXPECT_TRUE(parse({"--dump"}).dump); }
 
 /// Короткие и длинные формы ключей дают одинаковый результат.
 TEST(Options, ShortAndLongForms) {

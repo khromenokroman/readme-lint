@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -9,6 +10,7 @@
 #include <vector>
 
 #include "diagnostic.hpp"
+#include "markdown.hpp"
 #include "options.hpp"
 
 namespace {
@@ -22,6 +24,16 @@ std::string read_file(std::filesystem::path const &path) {
         throw std::runtime_error("не удалось открыть " + path.string());
     }
     return {std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
+}
+
+void dump(Markdown const &md, std::string const &file) {
+    for (auto const &b : md.blocks) {
+        auto const lines = static_cast<std::size_t>(std::count(b.text.begin(), b.text.end(), '\n'));
+        std::cout << file << ":" << b.line << ": блок [" << b.lang << "], строк " << lines << (b.closed ? "" : ", не закрыт") << "\n";
+    }
+    for (auto const &s : md.spans) {
+        std::cout << file << ":" << s.line << ":" << s.column << ": `" << s.text << "`\n";
+    }
 }
 
 } // namespace
@@ -42,10 +54,14 @@ int main(int argc, char *argv[]) {
             throw std::runtime_error("каталог проекта " + opt.repo.string() + " не найден");
         }
         auto const readme_path = opt.readme.is_absolute() ? opt.readme : opt.repo / opt.readme;
-        auto const text = read_file(readme_path);
-        (void)text;
+        auto const md = parse_markdown(read_file(readme_path));
+        auto const file = opt.readme.string();
+        if (opt.dump) {
+            dump(md, file);
+            return EXIT_SUCCESS;
+        }
 
-        std::vector<Diagnostic> const found;
+        auto const found = check_markdown(md, file);
         for (auto const &d : found) {
             std::cout << format_diagnostic(d) << "\n";
         }
