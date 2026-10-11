@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="630" viewBox="0 0 960 630" role="img" aria-label="readme-lint сверяет утверждения README.md с источниками правды в проекте и выводит расхождения">
+  <style>
+    :root {
+      --bg: #ffffff; --card: #f6f8fa; --border: #d0d7de; --text: #1f2328; --muted: #59636e;
+      --accent: #0969da; --accent-bg: #ddf4ff; --ok: #1a7f37; --warn: #9a6700; --err: #cf222e;
+      --term-bg: #1f2328; --term-text: #e6edf3; --term-muted: #9198a1; --term-err: #ff8182; --term-warn: #e3b341;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --card: #161b22; --border: #3d444d; --text: #e6edf3; --muted: #9198a1;
+        --accent: #4493f8; --accent-bg: #121d2f; --ok: #3fb950; --warn: #d29922; --err: #f85149;
+        --term-bg: #010409; --term-text: #e6edf3; --term-muted: #9198a1; --term-err: #ff7b72; --term-warn: #e3b341;
+      }
+    }
+    .bg { fill: var(--bg); }
+    .card { fill: var(--card); stroke: var(--border); stroke-width: 1; }
+    .rule { fill: var(--accent-bg); stroke: var(--accent); stroke-width: 1; }
+    .title { font: 600 16px "DejaVu Sans", "Segoe UI", Arial, sans-serif; fill: var(--text); }
+    .sub { font: 12px "DejaVu Sans", "Segoe UI", Arial, sans-serif; fill: var(--muted); }
+    .txt { font: 13px "DejaVu Sans", "Segoe UI", Arial, sans-serif; fill: var(--text); }
+    .mono { font: 12px "DejaVu Sans Mono", Consolas, Menlo, monospace; fill: var(--text); }
+    .ln { font: 12px "DejaVu Sans Mono", Consolas, Menlo, monospace; fill: var(--muted); }
+    .rname { font: 600 13px "DejaVu Sans Mono", Consolas, Menlo, monospace; fill: var(--accent); }
+    .edge { stroke: var(--muted); stroke-width: 1.2; fill: none; }
+    .cmp { stroke: var(--muted); stroke-width: 1.2; fill: none; stroke-dasharray: 4 3; }
+    .ok { font: 700 15px "DejaVu Sans", Arial, sans-serif; fill: var(--ok); }
+    .warn { font: 700 15px "DejaVu Sans", Arial, sans-serif; fill: var(--warn); }
+    .err { font: 700 15px "DejaVu Sans", Arial, sans-serif; fill: var(--err); }
+    .term { fill: var(--term-bg); }
+    .t { font: 12px "DejaVu Sans Mono", Consolas, Menlo, monospace; fill: var(--term-text); }
+    .tm { font: 12px "DejaVu Sans Mono", Consolas, Menlo, monospace; fill: var(--term-muted); }
+    .te { font: 12px "DejaVu Sans Mono", Consolas, Menlo, monospace; fill: var(--term-err); }
+    .tw { font: 12px "DejaVu Sans Mono", Consolas, Menlo, monospace; fill: var(--term-warn); }
+    .arrowhead { fill: var(--muted); }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrowhead" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="960" height="630" rx="12"/>
+
+  <!-- README -->
+  <rect class="card" x="20" y="20" width="300" height="380" rx="10"/>
+  <text class="title" x="40" y="50">README.md</text>
+  <text class="sub" x="40" y="70">утверждения о проекте</text>
+  <text class="ln" x="40" y="117">8</text>   <text class="mono" x="70" y="117">```bash … ```</text>
+  <text class="ln" x="40" y="167">12</text>  <text class="mono" x="70" y="167">код в `src/session/`</text>
+  <text class="ln" x="40" y="217">27</text>  <text class="mono" x="70" y="217">apt install libfoo-dev=1.2.*</text>
+  <text class="ln" x="40" y="267">41</text>  <text class="mono" x="70" y="267">busctl call … setItems as …</text>
+  <text class="ln" x="40" y="317">55</text>  <text class="mono" x="70" y="317">`-v`, `--verbose`</text>
+  <text class="ln" x="40" y="367">63</text>  <text class="mono" x="70" y="367">```cpp acme::open("x");</text>
+
+  <!-- правила -->
+  <rect class="card" x="360" y="20" width="240" height="380" rx="10"/>
+  <text class="title" x="380" y="50">readme-lint</text>
+  <text class="sub" x="380" y="70">правила, офлайн, без LLM</text>
+  <rect class="rule" x="400" y="98" width="160" height="28" rx="14"/>  <text class="rname" x="480" y="117" text-anchor="middle">markdown</text>
+  <rect class="rule" x="400" y="148" width="160" height="28" rx="14"/> <text class="rname" x="480" y="167" text-anchor="middle">names</text>
+  <rect class="rule" x="400" y="198" width="160" height="28" rx="14"/> <text class="rname" x="480" y="217" text-anchor="middle">deps</text>
+  <rect class="rule" x="400" y="248" width="160" height="28" rx="14"/> <text class="rname" x="480" y="267" text-anchor="middle">dbus</text>
+  <rect class="rule" x="400" y="298" width="160" height="28" rx="14"/> <text class="rname" x="480" y="317" text-anchor="middle">options</text>
+  <rect class="rule" x="400" y="348" width="160" height="28" rx="14"/> <text class="rname" x="480" y="367" text-anchor="middle">snippets</text>
+
+  <!-- источники правды -->
+  <rect class="card" x="640" y="20" width="300" height="380" rx="10"/>
+  <text class="title" x="660" y="50">Проект</text>
+  <text class="sub" x="660" y="70">источники правды</text>
+  <text class="txt" x="660" y="117">блоки кода закрыты</text>
+  <text class="txt" x="660" y="167">git ls-files, слова в коде</text>
+  <text class="txt" x="660" y="217">build-deps.lst, debian/control</text>
+  <text class="txt" x="660" y="267">D-Bus XML, SD_BUS_METHOD</text>
+  <text class="txt" x="660" y="317">getopt, struct option</text>
+  <text class="txt" x="660" y="367">компилятор c++ -fsyntax-only</text>
+
+  <!-- связи: README -> правило -> источник -->
+  <g>
+    <path class="edge" d="M300,112 H396" marker-end="url(#arrow)"/>
+    <path class="edge" d="M300,162 H396" marker-end="url(#arrow)"/>
+    <path class="edge" d="M300,212 H396" marker-end="url(#arrow)"/>
+    <path class="edge" d="M300,262 H396" marker-end="url(#arrow)"/>
+    <path class="edge" d="M300,312 H396" marker-end="url(#arrow)"/>
+    <path class="edge" d="M300,362 H396" marker-end="url(#arrow)"/>
+    <path class="cmp" d="M564,112 H652" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="cmp" d="M564,162 H652" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="cmp" d="M564,212 H652" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="cmp" d="M564,262 H652" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="cmp" d="M564,312 H652" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="cmp" d="M564,362 H652" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- итог сверки -->
+  <text class="ok" x="920" y="118" text-anchor="end">✓</text>
+  <text class="ok" x="920" y="168" text-anchor="end">✓</text>
+  <text class="err" x="920" y="218" text-anchor="end">✗</text>
+  <text class="err" x="920" y="268" text-anchor="end">✗</text>
+  <text class="warn" x="920" y="318" text-anchor="end">!</text>
+  <text class="ok" x="920" y="368" text-anchor="end">✓</text>
+
+  <!-- вывод -->
+  <rect class="term" x="20" y="430" width="920" height="180" rx="10"/>
+  <text class="tm" x="40" y="460">$ readme-lint .</text>
+  <text class="te" x="40" y="488">README.md:27: ошибка: версия пакета 'libfoo-dev': в README '=1.2.*', в build-deps.lst '=1.3.*' [deps]</text>
+  <text class="te" x="40" y="512">README.md:41: ошибка: сигнатура com.example.store.setItems: в README 'as', в share/store.xml 's' [dbus]</text>
+  <text class="tw" x="40" y="536">README.md:55: предупреждение: ключ '-q, --quiet' есть в коде, но не описан в README [options]</text>
+  <text class="tm" x="40" y="568">$ echo $?</text>
+  <text class="t" x="40" y="592">1   ← есть ошибки: шаг CI падает, пока README не исправят</text>
+</svg>

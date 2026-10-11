@@ -9,6 +9,18 @@ README.md:90: ошибка: сигнатура com.example.store.setItems: в RE
 Работает офлайн: источники правды берутся из самого репозитория (файлы, исходники, `build-deps.lst`,
 D-Bus XML), сеть и LLM не нужны. Подходит для запуска в CI.
 
+![Схема работы readme-lint: утверждения README сверяются правилами с источниками правды в проекте, расхождения выводятся в формате компилятора](docs/readme-lint.svg)
+
+## Установка
+
+Пакеты для Debian 12 и 13 публикуются на странице
+[Releases](https://github.com/khromenokroman/readme-lint/releases):
+
+```
+wget https://github.com/khromenokroman/readme-lint/releases/download/v0.8.0.0/readme-lint_0.8.0.0_amd64-debian13.deb
+sudo apt install ./readme-lint_0.8.0.0_amd64-debian13.deb
+```
+
 ## Использование
 
 ```
@@ -223,3 +235,31 @@ ctest --test-dir build --output-on-failure
 ```
 
 DEB-пакет: `cd build && cpack -G DEB`.
+
+## Релиз
+
+Релиз собирает и публикует CI (`.github/workflows/release.yml`) по тегу `vВЕРСИЯ`.
+
+1. Изменения слиты в `master`, CI на `master` зелёный.
+2. Версия в `CMakeLists.txt` продвинута коммитом `build: Версия X.Y.Z.W`, запись с этой версией
+   есть в `whatsnew.txt`.
+3. Поставить аннотированный тег на этот коммит и отправить его:
+
+   ```
+   git checkout master && git pull --ff-only
+   git tag -a vX.Y.Z.W -m "readme-lint X.Y.Z.W"
+   git push origin vX.Y.Z.W
+   ```
+
+4. CI по тегу проверяет, что тег совпадает с версией в `CMakeLists.txt`, собирает проект, запускает
+   тесты и проверку собственного README, собирает DEB для Debian 12 и 13 и публикует релиз
+   `readme-lint vX.Y.Z.W` с пакетами и списком изменений на странице
+   [Releases](https://github.com/khromenokroman/readme-lint/releases).
+
+Если тег поставлен не на тот коммит или не совпадает с версией, сборка по тегу падает. Тег удаляется
+и ставится заново:
+
+```
+git tag -d vX.Y.Z.W
+git push origin :refs/tags/vX.Y.Z.W
+```
