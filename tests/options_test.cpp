@@ -48,6 +48,16 @@ TEST(Options, IncludeDirs) {
     expect_error({"-I", ""}, "include-каталог не может быть пустым");
 }
 
+/// Ключи правила snippets.
+TEST(Options, Snippets) {
+    EXPECT_FALSE(parse({}).no_compile);
+    EXPECT_EQ(parse({}).compiler, "");
+    EXPECT_TRUE(parse({"--no-compile"}).no_compile);
+    EXPECT_EQ(parse({"--cxx", "clang++"}).compiler, "clang++");
+    expect_error({"--cxx", ""}, "имя компилятора не может быть пустым");
+    expect_error({"--cxx"}, "для ключа --cxx не указано значение");
+}
+
 /// --dump включает вывод разобранного README.
 TEST(Options, Dump) { EXPECT_TRUE(parse({"--dump"}).dump); }
 

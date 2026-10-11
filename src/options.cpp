@@ -24,6 +24,14 @@ Options parse_options(std::span<std::string_view const> args) {
             opt.help = true;
         } else if (arg == "-V" || arg == "--version") {
             opt.version = true;
+        } else if (arg == "--no-compile") {
+            opt.no_compile = true;
+        } else if (arg == "--cxx") {
+            auto const value = take_value(args, i);
+            if (value.empty()) {
+                throw std::invalid_argument("имя компилятора не может быть пустым");
+            }
+            opt.compiler = value;
         } else if (arg == "--dump") {
             opt.dump = true;
         } else if (arg == "-I" || arg == "--include") {
@@ -62,6 +70,8 @@ std::string usage() {
            "  -f, --file ФАЙЛ   проверяемый README, путь от корня проекта (по умолчанию README.md)\n"
            "  -I, --include КАТ системный include-каталог для внешних имён, можно несколько\n"
            "                    (по умолчанию /usr/include и /usr/local/include)\n"
+           "      --cxx ПУТЬ    компилятор примеров C/C++ (по умолчанию $CXX или c++)\n"
+           "      --no-compile  не компилировать примеры C/C++\n"
            "      --dump        вывести найденные в README блоки кода и inline-код, без проверки\n"
            "  -V, --version     версия программы\n"
            "  -h, --help        эта справка\n"

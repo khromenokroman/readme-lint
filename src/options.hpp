@@ -12,6 +12,8 @@ struct Options {
     std::filesystem::path repo{"."};                 ///< каталог проверяемого проекта
     std::filesystem::path readme{"README.md"};       ///< README, относительный путь считается от repo
     std::vector<std::filesystem::path> include_dirs; ///< системные include-каталоги, пустой: /usr/include и /usr/local/include
+    std::string compiler;                            ///< компилятор примеров, пустой: $CXX или c++
+    bool no_compile = false;                         ///< не компилировать примеры (правило snippets)
     bool dump = false;                               ///< вывести найденные блоки и inline-код вместо проверки
     bool help = false;                               ///< показать справку
     bool version = false;                            ///< показать версию

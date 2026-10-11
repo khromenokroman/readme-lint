@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_TESTS "Собирать тесты" ON)
 
 find_package(fmt REQUIRED)
+find_package(Threads REQUIRED)
 
 include(GNUInstallDirs)
 
@@ -25,11 +26,12 @@ add_library(${PROJECT_NAME}-core STATIC
         src/rule_deps.cpp
         src/rule_names.cpp
         src/rule_options.cpp
+        src/rule_snippets.cpp
         src/suppress.cpp
 )
 target_include_directories(${PROJECT_NAME}-core PUBLIC src)
 target_compile_definitions(${PROJECT_NAME}-core PUBLIC README_LINT_VERSION="${PROJECT_VERSION}")
-target_link_libraries(${PROJECT_NAME}-core PUBLIC fmt::fmt-header-only)
+target_link_libraries(${PROJECT_NAME}-core PUBLIC fmt::fmt-header-only Threads::Threads)
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
@@ -48,6 +50,7 @@ if (BUILD_TESTS)
             tests/rule_deps_test.cpp
             tests/rule_names_test.cpp
             tests/rule_options_test.cpp
+            tests/rule_snippets_test.cpp
             tests/suppress_test.cpp
     )
     target_link_libraries(${PROJECT_NAME}-tests PRIVATE ${PROJECT_NAME}-core GTest::gtest_main GTest::gmock)

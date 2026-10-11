@@ -17,6 +17,7 @@
 #include "rule_deps.hpp"
 #include "rule_names.hpp"
 #include "rule_options.hpp"
+#include "rule_snippets.hpp"
 #include "suppress.hpp"
 
 namespace {
@@ -88,6 +89,10 @@ int main(int argc, char *argv[]) {
         std::erase_if(mentions, [&](OptionMention const &m) { return supp.suppressed(m.line, "options"); });
         auto options = check_options(mentions, load_cli_options(opt.repo, repo), ignore, file);
         found.insert(found.end(), options.begin(), options.end());
+        if (!opt.no_compile) {
+            auto snippets = check_snippets(supp.visible(md, "snippets"), readme_text, snippet_config(opt.repo, repo, opt.compiler), file);
+            found.insert(found.end(), snippets.begin(), snippets.end());
+        }
         supp.filter(found);
         std::stable_sort(found.begin(), found.end(), [](Diagnostic const &a, Diagnostic const &b) { return a.line < b.line; });
         for (auto const &d : found) {
