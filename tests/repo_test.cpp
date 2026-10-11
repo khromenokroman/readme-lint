@@ -90,12 +90,13 @@ TEST(Repo, CollectWords) {
     EXPECT_FALSE(w.contains("abc")) << "'3abc' не идентификатор, его хвост не должен считаться словом";
 }
 
-/// Вне git проект обходится по каталогу: каталоги сборки и скрытые пропускаются, скрипты без расширения читаются.
+/// Вне git проект обходится по каталогу: каталоги сборки, VCS и IDE пропускаются, .github нет, скрипты без расширения читаются.
 TEST(Repo, WalkWithoutGit) {
     TempDir const t;
     t.write("src/a.cpp", "void real_func();");
     t.write("build/gen.cpp", "void generated_func();");
-    t.write(".hidden/h.cpp", "void hidden_func();");
+    t.write(".idea/h.cpp", "void hidden_func();");
+    t.write(".github/workflows/ci.yml", "run: echo CI_ONLY_WORD");
     t.write("bin/tool", "#!/bin/sh\nexport TOOL_VAR=1\n");
     t.write("data/blob", "BLOB_WORD");
     Repo const r{t.path};
@@ -103,7 +104,9 @@ TEST(Repo, WalkWithoutGit) {
     EXPECT_TRUE(r.has_word("real_func"));
     EXPECT_FALSE(r.has_path("build/gen.cpp")) << "каталог build не часть проекта";
     EXPECT_FALSE(r.has_word("generated_func"));
-    EXPECT_FALSE(r.has_word("hidden_func"));
+    EXPECT_FALSE(r.has_word("hidden_func")) << "каталог IDE не часть проекта";
+    EXPECT_TRUE(r.has_path(".github/workflows/ci.yml")) << ".github часть проекта, хоть и скрытый";
+    EXPECT_TRUE(r.has_word("CI_ONLY_WORD"));
     EXPECT_TRUE(r.has_word("TOOL_VAR")) << "скрипт без расширения с #! считается кодом";
     EXPECT_FALSE(r.has_word("BLOB_WORD")) << "файл без расширения и без #! кодом не считается";
 }

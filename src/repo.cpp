@@ -67,7 +67,8 @@ std::string shell_quote(std::string const &s) {
 
 /// Список файлов из git ls-files; пустой, если каталог не в git или git недоступен.
 std::vector<std::string> git_files(fs::path const &root) {
-    auto const cmd = "git -C " + shell_quote(root.string()) + " ls-files -z 2>/dev/null";
+    // safe.directory: в контейнере CI владелец каталога другой, а список файлов только читается.
+    auto const cmd = "git -c safe.directory='*' -C " + shell_quote(root.string()) + " ls-files -z 2>/dev/null";
     std::unique_ptr<FILE, int (*)(FILE *)> pipe{popen(cmd.c_str(), "r"), pclose};
     if (!pipe) {
         return {};
@@ -92,8 +93,11 @@ std::vector<std::string> git_files(fs::path const &root) {
     return files;
 }
 
-/// Каталоги сборки и служебные каталоги не считаются частью проекта.
-bool skip_dir(std::string const &name) { return name.starts_with('.') || name.starts_with("build") || name.starts_with("cmake-build-"); }
+/// Каталоги сборки, VCS и IDE не считаются частью проекта; остальные скрытые (.github) считаются.
+bool skip_dir(std::string const &name) {
+    return name == ".git" || name == ".idea" || name == ".vscode" || name == ".cache" || name.starts_with("build") ||
+           name.starts_with("cmake-build-");
+}
 
 std::vector<std::string> walk_files(fs::path const &root) {
     std::vector<std::string> files;

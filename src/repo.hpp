@@ -12,7 +12,7 @@
 class Repo {
    public:
     /**
-     * @brief Загружает список файлов через git ls-files, вне git обходит каталог (без скрытых и build*).
+     * @brief Загружает список файлов через git ls-files, вне git обходит каталог (без .git, .idea, .vscode, .cache, build*).
      * @param root Корень проекта.
      * @throw std::runtime_error Каталог не читается.
      */
