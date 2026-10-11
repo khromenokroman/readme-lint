@@ -51,6 +51,9 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
 
+      - name: Check own README
+        run: ./build/readme-lint .
+
       - name: Package DEB
         working-directory: build
         run: |

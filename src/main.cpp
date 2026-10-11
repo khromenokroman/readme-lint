@@ -12,11 +12,16 @@
 #include "diagnostic.hpp"
 #include "markdown.hpp"
 #include "options.hpp"
+#include "repo.hpp"
+#include "rule_names.hpp"
 
 namespace {
 
 constexpr int EXIT_FINDINGS = 1;
 constexpr int EXIT_USAGE = 2;
+
+/// Файл исключений в корне проверяемого проекта.
+constexpr char const IGNORE_FILE[] = ".readme-lint-ignore";
 
 std::string read_file(std::filesystem::path const &path) {
     std::ifstream in{path, std::ios::binary};
@@ -61,11 +66,19 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-        auto const found = check_markdown(md, file);
+        auto found = check_markdown(md, file);
+        Repo const repo{opt.repo};
+        SystemHeaders headers{opt.include_dirs.empty() ? std::vector<std::filesystem::path>{"/usr/include", "/usr/local/include"} : opt.include_dirs};
+        auto const ignore = load_ignore(opt.repo / IGNORE_FILE);
+        auto const readme_dir =
+            std::filesystem::absolute(readme_path).lexically_relative(std::filesystem::absolute(opt.repo)).parent_path().generic_string();
+        auto names = check_names(md, repo, headers, ignore, file, readme_dir);
+        found.insert(found.end(), names.begin(), names.end());
         for (auto const &d : found) {
             std::cout << format_diagnostic(d) << "\n";
         }
-        return found.empty() ? EXIT_SUCCESS : EXIT_FINDINGS;
+        bool const errors = std::any_of(found.begin(), found.end(), [](Diagnostic const &d) { return d.severity == Severity::ERROR; });
+        return errors ? EXIT_FINDINGS : EXIT_SUCCESS;
     } catch (std::exception const &ex) {
         std::cerr << "Ошибка: " << ex.what() << std::endl;
         return EXIT_USAGE;

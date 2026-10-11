@@ -1,0 +1,11 @@
+# имя файла как понятие, а не файл этого проекта
+build-deps.lst
+# примеры в описании правила names
+src/app/server.cpp
+src/session/
+src/app/server.*
+metrcs.cpp
+OrderParser
+m_cache
+safe_invoke
+PATH_TO_DATA

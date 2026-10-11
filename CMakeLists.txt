@@ -19,6 +19,8 @@ add_library(${PROJECT_NAME}-core STATIC
         src/diagnostic.cpp
         src/markdown.cpp
         src/options.cpp
+        src/repo.cpp
+        src/rule_names.cpp
 )
 target_include_directories(${PROJECT_NAME}-core PUBLIC src)
 target_compile_definitions(${PROJECT_NAME}-core PUBLIC README_LINT_VERSION="${PROJECT_VERSION}")
@@ -36,6 +38,8 @@ if (BUILD_TESTS)
             tests/diagnostic_test.cpp
             tests/markdown_test.cpp
             tests/options_test.cpp
+            tests/repo_test.cpp
+            tests/rule_names_test.cpp
     )
     target_link_libraries(${PROJECT_NAME}-tests PRIVATE ${PROJECT_NAME}-core GTest::gtest_main GTest::gmock)
     include(GoogleTest)

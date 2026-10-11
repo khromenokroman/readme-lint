@@ -38,6 +38,16 @@ TEST(Options, Defaults) {
     EXPECT_FALSE(opt.version);
 }
 
+/// -I задаёт include-каталоги в порядке указания, по умолчанию список пуст.
+TEST(Options, IncludeDirs) {
+    EXPECT_TRUE(parse({}).include_dirs.empty());
+    auto const opt = parse({"-I", "/opt/a", "--include", "/opt/b"});
+    ASSERT_EQ(opt.include_dirs.size(), 2U);
+    EXPECT_EQ(opt.include_dirs[0], "/opt/a");
+    EXPECT_EQ(opt.include_dirs[1], "/opt/b");
+    expect_error({"-I", ""}, "include-каталог не может быть пустым");
+}
+
 /// --dump включает вывод разобранного README.
 TEST(Options, Dump) { EXPECT_TRUE(parse({"--dump"}).dump); }
 
