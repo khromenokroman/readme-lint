@@ -13,6 +13,7 @@
 #include "markdown.hpp"
 #include "options.hpp"
 #include "repo.hpp"
+#include "rule_deps.hpp"
 #include "rule_names.hpp"
 
 namespace {
@@ -74,6 +75,9 @@ int main(int argc, char *argv[]) {
             std::filesystem::absolute(readme_path).lexically_relative(std::filesystem::absolute(opt.repo)).parent_path().generic_string();
         auto names = check_names(md, repo, headers, ignore, file, readme_dir);
         found.insert(found.end(), names.begin(), names.end());
+        auto deps = check_deps(md, load_dep_sources(opt.repo), file);
+        found.insert(found.end(), deps.begin(), deps.end());
+        std::stable_sort(found.begin(), found.end(), [](Diagnostic const &a, Diagnostic const &b) { return a.line < b.line; });
         for (auto const &d : found) {
             std::cout << format_diagnostic(d) << "\n";
         }

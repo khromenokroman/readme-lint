@@ -20,6 +20,7 @@ add_library(${PROJECT_NAME}-core STATIC
         src/markdown.cpp
         src/options.cpp
         src/repo.cpp
+        src/rule_deps.cpp
         src/rule_names.cpp
 )
 target_include_directories(${PROJECT_NAME}-core PUBLIC src)
@@ -39,6 +40,7 @@ if (BUILD_TESTS)
             tests/markdown_test.cpp
             tests/options_test.cpp
             tests/repo_test.cpp
+            tests/rule_deps_test.cpp
             tests/rule_names_test.cpp
     )
     target_link_libraries(${PROJECT_NAME}-tests PRIVATE ${PROJECT_NAME}-core GTest::gtest_main GTest::gmock)
