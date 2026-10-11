@@ -25,6 +25,7 @@ add_library(${PROJECT_NAME}-core STATIC
         src/rule_deps.cpp
         src/rule_names.cpp
         src/rule_options.cpp
+        src/suppress.cpp
 )
 target_include_directories(${PROJECT_NAME}-core PUBLIC src)
 target_compile_definitions(${PROJECT_NAME}-core PUBLIC README_LINT_VERSION="${PROJECT_VERSION}")
@@ -47,6 +48,7 @@ if (BUILD_TESTS)
             tests/rule_deps_test.cpp
             tests/rule_names_test.cpp
             tests/rule_options_test.cpp
+            tests/suppress_test.cpp
     )
     target_link_libraries(${PROJECT_NAME}-tests PRIVATE ${PROJECT_NAME}-core GTest::gtest_main GTest::gmock)
     include(GoogleTest)

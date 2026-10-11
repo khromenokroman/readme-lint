@@ -17,6 +17,7 @@
 #include "rule_deps.hpp"
 #include "rule_names.hpp"
 #include "rule_options.hpp"
+#include "suppress.hpp"
 
 namespace {
 
@@ -70,21 +71,24 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
+        Suppressions const supp{readme_text, md};
         auto found = check_markdown(md, file);
         Repo const repo{opt.repo};
         SystemHeaders headers{opt.include_dirs.empty() ? std::vector<std::filesystem::path>{"/usr/include", "/usr/local/include"} : opt.include_dirs};
         auto const ignore = load_ignore(opt.repo / IGNORE_FILE);
         auto const readme_dir =
             std::filesystem::absolute(readme_path).lexically_relative(std::filesystem::absolute(opt.repo)).parent_path().generic_string();
-        auto names = check_names(md, repo, headers, ignore, file, readme_dir);
+        auto names = check_names(supp.visible(md, "names"), repo, headers, ignore, file, readme_dir);
         found.insert(found.end(), names.begin(), names.end());
-        auto deps = check_deps(md, load_dep_sources(opt.repo), file);
+        auto deps = check_deps(supp.visible(md, "deps"), load_dep_sources(opt.repo), file);
         found.insert(found.end(), deps.begin(), deps.end());
         auto dbus = check_dbus(readme_text, load_dbus_model(opt.repo, repo), repo, {"/usr/share/dbus-1/interfaces"}, ignore, file);
         found.insert(found.end(), dbus.begin(), dbus.end());
-        auto options =
-            check_options(find_readme_options(readme_text, md, program_names(opt.repo, repo)), load_cli_options(opt.repo, repo), ignore, file);
+        auto mentions = find_readme_options(readme_text, md, program_names(opt.repo, repo));
+        std::erase_if(mentions, [&](OptionMention const &m) { return supp.suppressed(m.line, "options"); });
+        auto options = check_options(mentions, load_cli_options(opt.repo, repo), ignore, file);
         found.insert(found.end(), options.begin(), options.end());
+        supp.filter(found);
         std::stable_sort(found.begin(), found.end(), [](Diagnostic const &a, Diagnostic const &b) { return a.line < b.line; });
         for (auto const &d : found) {
             std::cout << format_diagnostic(d) << "\n";
