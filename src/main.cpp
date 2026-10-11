@@ -16,6 +16,7 @@
 #include "rule_dbus.hpp"
 #include "rule_deps.hpp"
 #include "rule_names.hpp"
+#include "rule_options.hpp"
 
 namespace {
 
@@ -81,6 +82,9 @@ int main(int argc, char *argv[]) {
         found.insert(found.end(), deps.begin(), deps.end());
         auto dbus = check_dbus(readme_text, load_dbus_model(opt.repo, repo), repo, {"/usr/share/dbus-1/interfaces"}, ignore, file);
         found.insert(found.end(), dbus.begin(), dbus.end());
+        auto options =
+            check_options(find_readme_options(readme_text, md, program_names(opt.repo, repo)), load_cli_options(opt.repo, repo), ignore, file);
+        found.insert(found.end(), options.begin(), options.end());
         std::stable_sort(found.begin(), found.end(), [](Diagnostic const &a, Diagnostic const &b) { return a.line < b.line; });
         for (auto const &d : found) {
             std::cout << format_diagnostic(d) << "\n";

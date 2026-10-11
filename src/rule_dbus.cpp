@@ -7,6 +7,8 @@
 #include <fstream>
 #include <optional>
 
+#include "cparse.hpp"
+
 namespace fs = std::filesystem;
 
 namespace {
@@ -78,71 +80,6 @@ std::string attr(Attrs const &a, std::string_view name) {
 
 // ---------------------------------------------------------------- sd-bus
 
-/// Делит аргументы макроса по запятым верхнего уровня с учётом скобок и строк.
-std::vector<std::string_view> split_args(std::string_view s) {
-    std::vector<std::string_view> out;
-    int depth = 0;
-    std::size_t start = 0;
-    for (std::size_t i = 0; i < s.size(); ++i) {
-        auto const c = s[i];
-        if (c == '"' || c == '\'') {
-            for (++i; i < s.size() && s[i] != c; ++i) {
-                if (s[i] == '\\') {
-                    ++i;
-                }
-            }
-        } else if (c == '(' || c == '{' || c == '[') {
-            ++depth;
-        } else if (c == ')' || c == '}' || c == ']') {
-            --depth;
-        } else if (c == ',' && depth == 0) {
-            out.push_back(s.substr(start, i - start));
-            start = i + 1;
-        }
-    }
-    out.push_back(s.substr(start));
-    return out;
-}
-
-/// Содержимое скобок, открытых в позиции open; npos-длина, если скобка не закрыта.
-std::string_view paren_content(std::string_view s, std::size_t open) {
-    int depth = 0;
-    for (std::size_t i = open; i < s.size(); ++i) {
-        auto const c = s[i];
-        if (c == '"' || c == '\'') {
-            for (++i; i < s.size() && s[i] != c; ++i) {
-                if (s[i] == '\\') {
-                    ++i;
-                }
-            }
-        } else if (c == '(') {
-            ++depth;
-        } else if (c == ')' && --depth == 0) {
-            return s.substr(open + 1, i - open - 1);
-        }
-    }
-    return {};
-}
-
-/// Все строковые литералы в выражении подряд.
-std::vector<std::string> literals(std::string_view s) {
-    std::vector<std::string> out;
-    for (std::size_t i = 0; i < s.size(); ++i) {
-        if (s[i] != '"') {
-            continue;
-        }
-        std::string lit;
-        for (++i; i < s.size() && s[i] != '"'; ++i) {
-            if (s[i] == '\\' && i + 1 < s.size()) {
-                ++i;
-            }
-            lit.push_back(s[i]);
-        }
-        out.push_back(std::move(lit));
-    }
-    return out;
-}
-
 /// Значение аргумента-строки: склеенные литералы или NULL/nullptr как пустая строка.
 std::optional<std::string> literal_value(std::string_view arg) {
     auto const b = arg.find_first_not_of(" \t\r\n");
@@ -157,7 +94,7 @@ std::optional<std::string> literal_value(std::string_view arg) {
         return std::nullopt;
     }
     std::string out;
-    for (auto const &l : literals(arg)) {
+    for (auto const &l : string_literals(arg)) {
         out += l;
     }
     return out;
@@ -173,7 +110,7 @@ std::optional<std::string> args_macro_types(std::string_view arg) {
         return std::nullopt;
     }
     std::string out;
-    for (auto const &l : literals(paren_content(arg, open))) {
+    for (auto const &l : string_literals(bracket_content(arg, open))) {
         out += l;
     }
     return out;
@@ -441,7 +378,7 @@ void parse_sdbus_vtables(std::string_view code, std::string const &file, DbusMod
         if (j >= code.size() || code[j] != '(') {
             continue;
         }
-        auto const args = split_args(paren_content(code, j));
+        auto const args = split_args(bracket_content(code, j));
         if (args.size() < 3) {
             continue;
         }
@@ -477,7 +414,7 @@ DbusModel load_dbus_model(fs::path const &root, Repo const &repo) {
         if (xml && text.find("<interface") != std::string::npos) {
             parse_introspection_xml(text, f, model);
         } else if (code && text.find("SD_BUS_METHOD") != std::string::npos) {
-            parse_sdbus_vtables(text, f, model);
+            parse_sdbus_vtables(strip_comments(text), f, model);
         }
     }
     return model;

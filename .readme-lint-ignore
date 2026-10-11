@@ -10,3 +10,9 @@ OrderParser
 m_cache
 safe_invoke
 PATH_TO_DATA
+# примеры в описании правила options
+-o
+--output
+-4
+-c
+--check
