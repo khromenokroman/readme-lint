@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25.1)
 project(readme-lint
-        VERSION 0.6.0.0
+        VERSION 0.7.0.0
         LANGUAGES CXX
         HOMEPAGE_URL "https://github.com/khromenokroman/readme-lint")
 
