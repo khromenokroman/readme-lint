@@ -20,6 +20,7 @@ add_library(${PROJECT_NAME}-core STATIC
         src/markdown.cpp
         src/options.cpp
         src/repo.cpp
+        src/rule_dbus.cpp
         src/rule_deps.cpp
         src/rule_names.cpp
 )
@@ -40,6 +41,7 @@ if (BUILD_TESTS)
             tests/markdown_test.cpp
             tests/options_test.cpp
             tests/repo_test.cpp
+            tests/rule_dbus_test.cpp
             tests/rule_deps_test.cpp
             tests/rule_names_test.cpp
     )

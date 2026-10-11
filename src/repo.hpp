@@ -43,6 +43,9 @@ class Repo {
     /// Каталог верхнего уровня или файл в корне с таким именем существует.
     [[nodiscard]] bool has_top_level(std::string_view name) const;
 
+    /// Файлы проекта относительно корня, отсортированы.
+    [[nodiscard]] std::vector<std::string> const &files() const { return m_files; }
+
     /// Слово встречается в коде проекта как идентификатор или совпадает с именем файла без расширения.
     [[nodiscard]] bool has_word(std::string_view word) const;
 

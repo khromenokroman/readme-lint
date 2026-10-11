@@ -13,6 +13,7 @@
 #include "markdown.hpp"
 #include "options.hpp"
 #include "repo.hpp"
+#include "rule_dbus.hpp"
 #include "rule_deps.hpp"
 #include "rule_names.hpp"
 
@@ -60,7 +61,8 @@ int main(int argc, char *argv[]) {
             throw std::runtime_error("каталог проекта " + opt.repo.string() + " не найден");
         }
         auto const readme_path = opt.readme.is_absolute() ? opt.readme : opt.repo / opt.readme;
-        auto const md = parse_markdown(read_file(readme_path));
+        auto const readme_text = read_file(readme_path);
+        auto const md = parse_markdown(readme_text);
         auto const file = opt.readme.string();
         if (opt.dump) {
             dump(md, file);
@@ -77,6 +79,8 @@ int main(int argc, char *argv[]) {
         found.insert(found.end(), names.begin(), names.end());
         auto deps = check_deps(md, load_dep_sources(opt.repo), file);
         found.insert(found.end(), deps.begin(), deps.end());
+        auto dbus = check_dbus(readme_text, load_dbus_model(opt.repo, repo), repo, {"/usr/share/dbus-1/interfaces"}, ignore, file);
+        found.insert(found.end(), dbus.begin(), dbus.end());
         std::stable_sort(found.begin(), found.end(), [](Diagnostic const &a, Diagnostic const &b) { return a.line < b.line; });
         for (auto const &d : found) {
             std::cout << format_diagnostic(d) << "\n";
