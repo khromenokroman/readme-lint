@@ -46,6 +46,8 @@ TEST(Markdown, IndentedFenceInList) {
 TEST(Markdown, LangFromInfoString) {
     EXPECT_EQ(parse_markdown("```cpp title=\"a\"\n```\n").blocks.at(0).lang, "cpp");
     EXPECT_EQ(parse_markdown("```c++{.line-numbers}\n```\n").blocks.at(0).lang, "c++");
+    EXPECT_EQ(parse_markdown("```C++\n```\n").blocks.at(0).lang, "c++") << "язык приводится к нижнему регистру";
+    EXPECT_EQ(parse_markdown("```Shell\n```\n").blocks.at(0).lang, "shell");
 }
 
 /// Ограждение с текстом после кавычек не закрывает блок.

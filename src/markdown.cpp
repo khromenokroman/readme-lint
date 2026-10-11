@@ -1,5 +1,7 @@
 #include "markdown.hpp"
 
+#include <algorithm>
+#include <cctype>
 #include <utility>
 
 namespace {
@@ -185,8 +187,10 @@ Markdown parse_markdown(std::string_view text) {
         if (parse_fence(line, open)) {
             flush();
             in_block = true;
-            auto const lang = open.info.substr(0, open.info.find_first_of(" \t{"));
-            md.blocks.push_back({std::string{lang}, {}, line_no, line_no + 1});
+            std::string lang{open.info.substr(0, open.info.find_first_of(" \t{"))};
+            // Язык подсветки не зависит от регистра: C++ и c++ одно и то же.
+            std::transform(lang.begin(), lang.end(), lang.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+            md.blocks.push_back({std::move(lang), {}, line_no, line_no + 1});
             continue;
         }
         if (starts_block(line)) {
